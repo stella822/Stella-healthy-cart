@@ -381,7 +381,7 @@ footer strong { color: var(--orange); }
   <div class="stat-item"><div class="num">100%</div><div class="lbl">Nutrition Tracked</div></div>
   <div class="stat-item"><div class="num">Free</div><div class="lbl">Delivery $25+</div></div>
   <div class="stat-item"><div class="num">2</div><div class="lbl">Categories</div></div>
-</div>
+</div>  
 
 <div class="main">
   <div class="tabs">
@@ -419,7 +419,7 @@ footer strong { color: var(--orange); }
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-total-row"><span>Total</span><span id="cartTotal">$0.00</span></div>
-    <button class="checkout-btn">Proceed to Checkout →</button>
+    <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout →</button>
   </div>
 </div>
 
@@ -586,7 +586,28 @@ function closeModal(e){ if(e.target===document.getElementById('modalOverlay')) c
 function closeModalDirect(){ document.getElementById('modalOverlay').classList.remove('open'); }
 let toastTimer;
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
-renderGrids();
+function proceedToCheckout(){
+  const keys = Object.keys(cart).filter(k => cart[k] > 0);
+  if(!keys.length){ 
+    showToast('🛒 Add items to cart first!');
+    return;
+  }
+  
+  let total = 0;
+  keys.forEach(k => {
+    const p = products.find(x => x.id == k);
+    total += p.price * cart[k];
+  });
+  
+  // Show confirmation
+  const confirmed = confirm(`Total: $${total.toFixed(2)}\n\nProceed to payment?`);
+  if(confirmed) {
+    showToast('✅ Payment processed! Thank you for your order.');
+    cart = {};
+    updateCartCount();
+    closeCart();
+  }
+}renderGrids();
 </script>
 </body>
 </html>
